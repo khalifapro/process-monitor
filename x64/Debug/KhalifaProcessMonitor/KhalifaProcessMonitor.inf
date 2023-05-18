@@ -1,0 +1,80 @@
+;
+; KhalifaProcessMonitor.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=System ; TODO: specify appropriate Class
+ClassGuid={4d36e97d-e325-11ce-bfc1-08002be10318} ; TODO: specify appropriate ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=KhalifaProcessMonitor.cat
+DriverVer = 05/18/2023,3.19.17.795
+PnpLockdown=1
+
+[DestinationDirs]
+DefaultDestDir = 12
+KhalifaProcessMonitor_Device_CoInstaller_CopyFiles = 11
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+KhalifaProcessMonitor.sys  = 1,,
+;
+
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NTamd64
+
+[Standard.NTamd64]
+%KhalifaProcessMonitor.DeviceDesc%=KhalifaProcessMonitor_Device, Root\KhalifaProcessMonitor ; TODO: edit hw-id
+
+[KhalifaProcessMonitor_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+KhalifaProcessMonitor.sys
+
+;-------------- Service installation
+[KhalifaProcessMonitor_Device.NT.Services]
+AddService = KhalifaProcessMonitor,%SPSVCINST_ASSOCSERVICE%, KhalifaProcessMonitor_Service_Inst
+
+; -------------- KhalifaProcessMonitor driver install sections
+[KhalifaProcessMonitor_Service_Inst]
+DisplayName    = %KhalifaProcessMonitor.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\KhalifaProcessMonitor.sys
+
+;
+;--- KhalifaProcessMonitor_Device Coinstaller installation ------
+;
+
+[KhalifaProcessMonitor_Device.NT.CoInstallers]
+AddReg=KhalifaProcessMonitor_Device_CoInstaller_AddReg
+CopyFiles=KhalifaProcessMonitor_Device_CoInstaller_CopyFiles
+
+[KhalifaProcessMonitor_Device_CoInstaller_AddReg]
+;
+
+
+[KhalifaProcessMonitor_Device_CoInstaller_CopyFiles]
+;
+
+
+[KhalifaProcessMonitor_Device.NT.Wdf]
+KmdfService =  KhalifaProcessMonitor, KhalifaProcessMonitor_wdfsect
+[KhalifaProcessMonitor_wdfsect]
+KmdfLibraryVersion = 1.15
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+DiskName = "KhalifaProcessMonitor Installation Disk"
+KhalifaProcessMonitor.DeviceDesc = "KhalifaProcessMonitor Device"
+KhalifaProcessMonitor.SVCDESC = "KhalifaProcessMonitor Service"
